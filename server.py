@@ -61,7 +61,6 @@ class World:
 # curl -v   -H "Content-Type: appication/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}'
 
 myWorld = World()
-# myWorld.set('A', {"x": 5, "y": 4})
 
 
 # I give this to you, this is how you get the raw body/data portion of a post in flask
@@ -93,7 +92,7 @@ def update(entity):
     else:
         for key in req:
             myWorld.update(entity, key, req[key])
-    return entity
+    return json.dumps(myWorld.get(entity))
 
 #  curl -v -H "Content-Type: appication/json" -X POST http://127.0.0.1:5000/world -d '{"a":{"x":1, "y":2},"b":{"x":2, "y":6}}'
 @app.route("/world", methods=['POST', 'GET'])

@@ -32,24 +32,26 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
 
-function sendJSONXMLHTTPRequest(url, objects, callback) {
+function sendJSONXMLHTTPRequest(method, url, objects, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState==4) {
             try {
                 if (xhr.status==200) {
-                    //XXX: parse some JSON from the request!
-                    //XXX: Pass the data to the callback!
+                    var res = JSON.parse(xhr.responseText);
+                    callback(res);
                 }
             }
             catch(e) {
-                alert('Error: ' + e.name);
+                alert('Error: ' + e.name + " -> " + e.message);
             }
         }
     };
-    //XXX: POST to a URL
-    //XXX: set the mimetype and the accept headers!
-    // Remember to use application/json !
+    xhr.open(method, url, true);
+    xhr.setRequestHeader("Content-Type","application/json");
+    xhr.setRequestHeader("Content-Length", objects.length);
+    xhr.setRequestHeader("Accept","application/json");
+    xhr.send(JSON.stringify(objects));
 }
 
 
@@ -105,8 +107,8 @@ function drawNextFrame() {
     drawNext = true;
 }
 
-// This optionally draws the frame, call this if you're not sure if you should update
-// the canvas
+// This optionally draws the frame,
+// call this if you're not sure if you should update the canvas
 function drawFrame() {
     if (drawNext) {
         renderFrame();
@@ -114,9 +116,9 @@ function drawFrame() {
     }
 }
 
+
 // This is unpleasent, canvas clicks are not handled well
 // So use this code, it works well on multitouch devices as well.
-
 function getPosition(e) {
 	if ( e.targetTouches && e.targetTouches.length > 0) {
 		var touch = e.targetTouches[0];
@@ -135,10 +137,9 @@ function getPosition(e) {
 
 
 function addEntity(entity, data) {
-    world[entity] = data;
-    drawNextFrame(); // (but should we?)
-    //XXX: Send a XHTML Request that updates the entity you just  modified!
-
+    sendJSONXMLHTTPRequest("POST", "/entity/" + entity, data, function(){
+        drawNextFrame();
+    });
 }
 
 var counter = 0;
@@ -262,13 +263,21 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    drawFrame();
+    sendJSONXMLHTTPRequest("GET", "/world", {}, function(res){
+        //console.log(test = res.space);
+        world = res.space;
+        drawFrame();
+    });
+}
+
+function poll(){
+    drawNextFrame();
 }
 
 // 30 frames per second
 setInterval( update, 1000/30.0);
-
-
+// 3 pols per second
+setInterval( poll, 100/30.0);
 
     </script>
 </body>
