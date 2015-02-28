@@ -99,13 +99,13 @@ def update(entity):
 def world():
     '''you should probably return the world here'''
     if (request.method == "GET"):
-        return json.dumps(myWorld.__dict__)
+        return json.dumps(myWorld.world())
     else:  # POST assuming this should replace the current world
         req = flask_post_json()
         myWorld.clear()
         for entity in req:
             myWorld.set(entity, req[entity])
-    return json.dumps(myWorld.__dict__)
+    return json.dumps(myWorld.world())
 
 
 @app.route("/entity/<entity>")
@@ -119,7 +119,7 @@ def get_entity(entity):
 def clear():
     '''Clear the world out!'''
     myWorld.clear()
-    return json.dumps(myWorld.__dict__)
+    return json.dumps(myWorld.world())
 
 if __name__ == "__main__":
     app.run()
