@@ -16,3 +16,5 @@ Assignment modified by Jake Brand
 
 Collaborators:
 Ashely Fegan
+Simon Fessehaye
+// http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript
