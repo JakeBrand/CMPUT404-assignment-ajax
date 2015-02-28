@@ -23,7 +23,7 @@
     <script src="json2.js"></script>
   </head>
   <body bgcolor="black" height="100%" width="100%">
-    <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas>
+    <canvas id="c" width="80%" height="80%" style="-webkit-tap-highlight-color: transparent;"></canvas>
     <script>
 var canvas = document.getElementById('c');
 var host = window.location.host;
@@ -135,25 +135,39 @@ function getPosition(e) {
 	}
 }
 
-
+// entityDict = [];
+// var timeoutHandler;
 function addEntity(entity, data) {
     sendJSONXMLHTTPRequest("POST", "/entity/" + entity, data, function(){
         drawNextFrame();
     });
+
+    // entityDict.push({
+    //     "entity": entity,
+    //     "data": data
+    // })
+    // Add entities after 80 miliseconds incase < 10 are added
+    // NOTE: Requirements say "respond to clicks within 100ms"
+    // clearTimeout(timeoutHandler);
+    // timeoutHandler = setTimeout(addEntities(), 80);
+
+    // if(entityDict.length == 10){
+    //     addEntities();
+    // }
 }
 
 // send batches of entities to be udpated
-//TODO: Finish me
-function addEntities(entities, data) {
-    sendJSONXMLHTTPRequest("POST", "/entities/" + entity, data, function(){
-        drawNextFrame();
-    });
-}
+// function addEntities() {
+//     sendJSONXMLHTTPRequest("POST", "/entities", entityDict, function(){
+//         drawNextFrame();
+//     });
+//     entityDict = [];
+// }
 
 var counter = 0;
 function addEntityWithoutName(data) {
     //var name = "X"+Math.floor((Math.random()*100)+1);
-    var name = "X"+(counter++)%80; // Was 100, faster with 80?
+    var name = "X"+(counter++)%100;
     addEntity(name,data);
 }
 
@@ -254,7 +268,6 @@ mouse = (function() {
 })();
 
 // Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
 });
@@ -279,6 +292,7 @@ function getRandomColor() {
 }
 
 function update() {
+    addEntities();
     sendJSONXMLHTTPRequest("GET", "/world", {}, function(res){
         world = res;
         drawFrame();
@@ -293,7 +307,7 @@ function poll(){
 // 30 frames per second
 setInterval( update, 1000/30.0);
 // 10 pols per second
-setInterval( poll, 100.0);
+ setInterval( poll, 100.0);
 
     </script>
 </body>

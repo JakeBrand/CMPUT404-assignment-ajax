@@ -94,6 +94,21 @@ def update(entity):
             myWorld.update(entity, key, req[key])
     return json.dumps(myWorld.get(entity))
 
+@app.route("/entities", methods=['POST', 'PUT'])
+def updateAll():
+    '''update the entities via this interface'''
+    req = flask_post_json()
+    for entry in req:
+        # {u'data': {u'y': 279, u'x': 622, u'colour': u'blue'}, u'entity': u'X0'}
+        if (myWorld.get(entry["entity"]) == {}):
+            myWorld.set(entry["entity"], entry["data"])
+        else:
+            data = entry["data"];
+            for key in entry["data"]:
+                myWorld.update(entry["entity"], key, data[key])
+    # return json.dumps(myWorld.get(req[0]["entity"]))
+    return json.dumps(myWorld.world())
+
 #  curl -v -H "Content-Type: appication/json" -X POST http://127.0.0.1:5000/world -d '{"a":{"x":1, "y":2},"b":{"x":2, "y":6}}'
 @app.route("/world", methods=['POST', 'GET'])
 def world():
